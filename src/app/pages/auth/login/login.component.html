@@ -1,0 +1,47 @@
+<p class="text-center">
+  <img
+    style="height: 50px;"
+    class="text-center"
+    [src]="'./assets/images/logo.png'"
+    alt="SSP Logo"
+  />
+</p>
+<h1 id="title" class="title">Super Star Pimps</h1>
+<p class="sub-title">Sign In</p>
+
+
+<form aria-labelledby="title">
+  <div class="form-control-group">
+    <label class="label" for="input-userName">Username:</label>
+    <input
+      nbInput
+      fullWidth
+      autocomplete="new"
+      id="userName"
+      placeholder="Username"
+      autofocus
+    />
+  </div>
+
+  <div class="form-control-group">
+    <label class="label" for="input-password">Password:</label>
+    <input
+      nbInput
+      fullWidth
+      autocomplete="new"
+      type="password"
+      id="password"
+      placeholder="Password"
+    />
+  </div>
+
+  <button
+    nbButton
+    type="button"
+    fullWidth
+    status="success"
+    [routerLink]="['/pages', 'dashboard']">
+
+    Sign In
+  </button>
+</form>

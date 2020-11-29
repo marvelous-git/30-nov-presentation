@@ -3,8 +3,9 @@ import { NbMediaBreakpointsService, NbMenuService, NbSidebarService, NbThemeServ
 
 import { UserData } from '../../../@core/data/users';
 import { LayoutService } from '../../../@core/utils';
-import { map, takeUntil } from 'rxjs/operators';
+import { filter, map, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'ngx-header',
@@ -16,6 +17,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private destroy$: Subject<void> = new Subject<void>();
   userPictureOnly: boolean = false;
   user: any;
+  isClosed = true;
 
   themes = [
     {
@@ -45,7 +47,27 @@ export class HeaderComponent implements OnInit, OnDestroy {
               private themeService: NbThemeService,
               private userService: UserData,
               private layoutService: LayoutService,
-              private breakpointService: NbMediaBreakpointsService) {
+              private breakpointService: NbMediaBreakpointsService,
+              router: Router) {
+                menuService
+                .onItemClick()
+                .pipe(
+                  filter(({ tag }) => tag === 'user-context-menu'),
+                  map(({ item: { title } }) => title.toLowerCase()),
+                )
+                .subscribe(title => {
+                  switch (title) {
+                    case 'profile':
+                      router.navigate(['/pages']);
+                      break;
+                    case 'log out':
+                      router.navigate(['/pages/dashboard']);
+                      break;
+                    case 'logout':
+              //        this.userService.logout();
+                      break;
+                  }
+                });
   }
 
   ngOnInit() {
@@ -61,7 +83,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
         map(([, currentBreakpoint]) => currentBreakpoint.width < xl),
         takeUntil(this.destroy$),
       )
-      .subscribe((isLessThanXl: boolean) => this.userPictureOnly = isLessThanXl);
+      .subscribe((isLessThanXl: boolean) => {
+        this.userPictureOnly = isLessThanXl;
+        this.isClosed = !isLessThanXl;
+      });
 
     this.themeService.onThemeChange()
       .pipe(
@@ -83,7 +108,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   toggleSidebar(): boolean {
     this.sidebarService.toggle(true, 'menu-sidebar');
     this.layoutService.changeLayoutSize();
-
+    this.isClosed = !this.isClosed;
     return false;
   }
 
@@ -91,4 +116,5 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.menuService.navigateHome();
     return false;
   }
+
 }
